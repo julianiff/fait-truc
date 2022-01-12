@@ -1,45 +1,48 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useState } from "react";
+import React from "react";
+import { Card } from "./components/atom/Card";
 
-function App() {
-  const [count, setCount] = useState(0)
+const themes = {
+  light: {
+    foreground: "#000000",
+    background: "#eeeeee",
+  },
+  dark: {
+    foreground: "#ffffff",
+    background: "#222222",
+  },
+};
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+function countReducer(state: any, action: any) {
+  switch (action.type) {
+    case "increment": {
+      return { count: state.count + 1 };
+    }
+    case "decrement": {
+      return { count: state.count - 1 };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
 }
 
-export default App
+export const ThemeContext = React.createContext(themes);
+export const CountContext = React.createContext<{
+  state: { count: any };
+  dispatch: React.Dispatch<any>;
+}>({ state: { count: 0 }, dispatch: () => "" });
+
+function App() {
+  // const [count, setCount] = useState(0)
+  const [state, dispatch] = React.useReducer(countReducer, { count: 0 });
+  const value = { state, dispatch };
+
+  return (
+    <CountContext.Provider value={value}>
+      <Card></Card>
+    </CountContext.Provider>
+  );
+}
+
+export default App;
